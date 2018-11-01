@@ -1,20 +1,21 @@
 {
-  "name": "electron-quick-start",
-  "version": "1.0.0",
-  "description": "A minimal Electron application",
+  "name": "spike-desktop-electron",
+  "version": "0.0.1",
+  "description": "Spike - conversational email. Unofficial desktop app built on ElectronJS",
   "main": "main.js",
   "scripts": {
     "start": "electron ."
   },
-  "repository": "https://github.com/electron/electron-quick-start",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ildella/spike-desktop-electron"
+  },
   "keywords": [
+    "Spike",
+    "email",
     "Electron",
-    "quick",
-    "start",
-    "tutorial",
-    "demo"
   ],
-  "author": "GitHub",
+  "author": "Daniele Dellafiore",
   "license": "CC0-1.0",
   "devDependencies": {
     "electron": "3.0.7"
