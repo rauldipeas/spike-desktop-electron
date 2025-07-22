@@ -17,6 +17,12 @@ npm install
 npm start
 ```
 
+And optionally make a deb file on `./dist` folder to install on _Debian/Ubuntu_.
+
+```bash
+bash build-deb.sh
+```
+
 ## Thanks
 
 To the [Spike](https://www.spikenow.com) team, as they deliver an amazing product.
