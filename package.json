@@ -18,6 +18,6 @@
   "author": "Daniele Dellafiore",
   "license": "CC0-1.0",
   "devDependencies": {
-    "electron": "3.0.7"
+    "electron": "^37.2.3"
   }
 }
