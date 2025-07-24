@@ -12,7 +12,8 @@ TBD...
 You need NodeJS to run this. 
 
 ```bash
-git clone git@github.com:rauldipeas/spike-desktop.git
+git clone https://github.com/rauldipeas/spike-desktop
+cd spike-desktop
 npm install
 npm start
 ```
