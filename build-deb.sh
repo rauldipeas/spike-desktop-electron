@@ -1,7 +1,7 @@
 #!/bin/bash
 
-APP_NAME="spike-desktop-electron"
-ICON_FILE="spike-desktop-electron.svg"
+APP_NAME="spike-desktop"
+ICON_FILE="spike.svg"
 ARCH="x64"
 PLATFORM="linux"
 VERSION="0.0.1"

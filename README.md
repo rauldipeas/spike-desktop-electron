@@ -12,7 +12,7 @@ TBD...
 You need NodeJS to run this. 
 
 ```bash
-git clone git@github.com:ildella/spike-desktop-electron.git
+git clone git@github.com:rauldipeas/spike-desktop.git
 npm install
 npm start
 ```
