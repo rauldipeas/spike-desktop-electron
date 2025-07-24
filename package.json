@@ -24,5 +24,19 @@
   "devDependencies": {
     "electron": "^37.2.3",
     "electron-builder": "^26.0.12"
-  }
+  },
+  "build": {
+    "appId": "com.spikenow",
+    "productName": "Spike",
+    "directories": {
+      "output": "dist"
+    },
+    "linux": {
+      "target": "deb",
+      "category": "Network",
+      "icon": "resources/spike.svg",
+      "maintainer": "Raul Dipeas <rauldipeas@example.com>"
+    }
+  },
+  "homepage": "https://github.com/rauldipeas/spike-desktop"  
 }
