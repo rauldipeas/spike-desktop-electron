@@ -11,7 +11,7 @@ function createWindow() {
   }
 
   mainWindow = new BrowserWindow({
-    icon: path.join(__dirname, 'spike-desktop-electron.png'),
+    icon: path.join(__dirname, 'mono-tray.png'),
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true
@@ -23,12 +23,12 @@ function createWindow() {
 
   // Estilo com fontes e tamanho legível
   mainWindow.webContents.on('did-finish-load', () => {
-    mainWindow.webContents.insertCSS(`
-      body, * {
-        font-family: "Segoe UI Symbol", "Noto Color Emoji", "Segoe UI Emoji", "Apple Color Emoji" !important;
-        font-size: 15px !important;
-      }
-    `);
+    // mainWindow.webContents.insertCSS(`
+    //  body, * {
+    //    font-family: "Segoe UI Symbol", "Noto Color Emoji", "Segoe UI Emoji", "Apple Color Emoji" !important;
+    //    font-size: 15px !important;
+    //  }
+    //`);
     mainWindow.setTitle("📬 Spike");
   });
 
@@ -60,7 +60,7 @@ function createWindow() {
 }
 
 function createTray() {
-  const trayIcon = nativeImage.createFromPath(path.join(__dirname, 'spike-desktop-electron.png'));
+  const trayIcon = nativeImage.createFromPath(path.join(__dirname, 'mono-tray.png'));
   tray = new Tray(trayIcon);
 
   const contextMenu = Menu.buildFromTemplate([
@@ -71,7 +71,7 @@ function createTray() {
       }
     }
   ]);
-  tray.setToolTip('SpikeNow');
+  tray.setToolTip('Spike');
   tray.setContextMenu(contextMenu);
 
   tray.on('click', () => {
@@ -127,7 +127,7 @@ if (!gotTheLock) {
   function newNotification() {
     notificationCount++;
     app.setBadgeCount(notificationCount);
-    tray.setToolTip(`SpikeNow - ${notificationCount} novas mensagens`);
+    tray.setToolTip(`Spike - ${notificationCount} novas mensagens`);
     playSound();
   }
   
