@@ -11,7 +11,7 @@ function createWindow() {
   }
 
   mainWindow = new BrowserWindow({
-    icon: path.join(__dirname, 'mono-tray.png'),
+    icon: path.join(__dirname, '..', 'resources', 'mono-tray.png'),
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true
@@ -60,7 +60,7 @@ function createWindow() {
 }
 
 function createTray() {
-  const trayIcon = nativeImage.createFromPath(path.join(__dirname, 'mono-tray.png'));
+  const trayIcon = nativeImage.createFromPath(path.join(__dirname, '..', 'resources', 'mono-tray.png'));
   tray = new Tray(trayIcon);
 
   const contextMenu = Menu.buildFromTemplate([
@@ -136,7 +136,7 @@ if (!gotTheLock) {
   function playSound() {
     if (mainWindow) {
       mainWindow.webContents.executeJavaScript(`
-        new Audio('file://${__dirname}/alert.mp3').play();
+        new Audio('file://${__dirname}/resources/alert.mp3').play();
       `);
     }
   }

@@ -2,9 +2,14 @@
   "name": "spike-desktop",
   "version": "0.0.1",
   "description": "Spike - conversational email. Unofficial desktop app built on ElectronJS",
-  "main": "main.js",
+  "main": "src/main.js",
   "scripts": {
-    "start": "electron ."
+    "start": "electron .",
+    "build": "electron-builder build --linux deb"
+  },
+  "author": {
+    "name": "Raul Dipeas",
+    "email": "rauldipeas@disroot.org"
   },
   "repository": {
     "type": "git",
@@ -15,9 +20,9 @@
     "email",
     "Electron"
   ],
-  "author": "Daniele Dellafiore",
   "license": "CC0-1.0",
   "devDependencies": {
-    "electron": "^37.2.3"
+    "electron": "^37.2.3",
+    "electron-builder": "^26.0.12"
   }
 }
