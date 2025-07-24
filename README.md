@@ -21,7 +21,7 @@ npm start
 And optionally make a deb file on `./dist` folder to install on _Debian/Ubuntu_.
 
 ```bash
-bash build-deb.sh
+npm run build
 ```
 
 ## Thanks
