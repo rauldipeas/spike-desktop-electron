@@ -23,6 +23,18 @@ function createWindow() {
   mainWindow.setMenu(null);
   mainWindow.loadURL('https://spikenow.com/web');
 
+  mainWindow.webContents.setWindowOpenHandler(({ url }) => {
+    require('electron').shell.openExternal(url);
+    return { action: 'deny' };
+  });
+
+  mainWindow.webContents.on('will-navigate', (event, url) => {
+    if (url !== mainWindow.webContents.getURL()) {
+      event.preventDefault();
+      require('electron').shell.openExternal(url);
+    }
+  });
+
   mainWindow.webContents.on('did-finish-load', () => {
     mainWindow.setTitle("📬 Spike");
   });
