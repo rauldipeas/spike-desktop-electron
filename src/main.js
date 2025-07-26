@@ -1,9 +1,32 @@
-const { app, BrowserWindow, Tray, Menu, nativeImage, Notification } = require('electron');
-const { exec } = require('child_process');
+const { app, BrowserWindow, Tray, Menu, nativeImage, Notification, ipcMain, session, nativeTheme } = require('electron');
 const path = require('path');
 
 let mainWindow = null;
 let tray = null;
+let lastCount = 0;
+
+const icons = {
+  mono: path.join(__dirname, '..', 'resources', 'mono-tray.png'),
+  monoBadge: path.join(__dirname, '..', 'resources', 'mono-tray-badge.png'),
+  color: path.join(__dirname, '..', 'resources', 'color-tray.png'),
+  colorBadge: path.join(__dirname, '..', 'resources', 'color-tray-badge.png')
+};
+
+function getIconPath(count) {
+  const isDark = nativeTheme.shouldUseDarkColors;
+  if (isDark) {
+    return count > 0 ? icons.monoBadge : icons.mono;
+  } else {
+    return count > 0 ? icons.colorBadge : icons.color;
+  }
+}
+
+function updateTrayIcon(count) {
+  if (!tray) return;
+  const iconPath = getIconPath(count);
+  tray.setImage(nativeImage.createFromPath(iconPath));
+  tray.setToolTip(count > 0 ? `Spike - ${count} nova(s) mensagem(ns)` : 'Spike');
+}
 
 function createWindow() {
   if (mainWindow) {
@@ -13,10 +36,11 @@ function createWindow() {
   }
 
   mainWindow = new BrowserWindow({
-    icon: path.join(__dirname, '..', 'resources', 'mono-tray.png'),
+    icon: icons.mono,
     webPreferences: {
-      nodeIntegration: false,
-      contextIsolation: true
+      preload: path.join(__dirname, 'preload.js'),
+      contextIsolation: true,
+      nodeIntegration: false
     }
   });
 
@@ -37,6 +61,31 @@ function createWindow() {
 
   mainWindow.webContents.on('did-finish-load', () => {
     mainWindow.setTitle("📬 Spike");
+
+    mainWindow.webContents.executeJavaScript(`
+      if (!window._observerAttached) {
+        window._observerAttached = true;
+
+        const notifyBadge = () => {
+          const badges = document.querySelectorAll('div.thread:not(.nobadge) div.badge');
+          let total = 0;
+          badges.forEach(badge => {
+            const txt = badge.textContent.trim();
+            const val = txt === '' ? 1 : parseInt(txt);
+            total += val;
+          });
+          window.electronAPI.notify(total);
+          window.electronAPI.updateTrayBadge(total);
+        };
+
+        const observer = new MutationObserver(() => {
+          notifyBadge();
+        });
+
+        observer.observe(document.body, { childList: true, subtree: true });
+        notifyBadge();
+      }
+    `);
   });
 
   mainWindow.webContents.on('before-input-event', (event, input) => {
@@ -62,21 +111,27 @@ function createWindow() {
       mainWindow.hide();
     }
   });
+
+  mainWindow.on('show', () => {
+    lastCount = 0;
+    updateTrayIcon(0);
+  });
 }
 
 function createTray() {
-  const trayIcon = nativeImage.createFromPath(path.join(__dirname, '..', 'resources', 'mono-tray.png'));
-  tray = new Tray(trayIcon);
+  tray = new Tray(nativeImage.createFromPath(icons.mono));
 
   const contextMenu = Menu.buildFromTemplate([
-    { label: 'Mostrar', click: () => {
+    {
+      label: 'Mostrar', click: () => {
         if (mainWindow) {
           mainWindow.show();
           mainWindow.focus();
         }
       }
     },
-    { label: 'Sair', click: () => {
+    {
+      label: 'Sair', click: () => {
         app.isQuiting = true;
         app.quit();
       }
@@ -97,6 +152,39 @@ function createTray() {
   });
 }
 
+ipcMain.removeAllListeners('notify');
+ipcMain.on('notify', (event, count) => {
+  if (mainWindow && mainWindow.isVisible()) {
+    lastCount = count;
+    return;
+  }
+
+  if (count > lastCount) {
+    const notif = new Notification({
+      title: 'Spike',
+      body: `${count} nova(s) mensagem(ns)`
+    });
+
+    notif.on('click', () => {
+      if (mainWindow) {
+        mainWindow.show();
+        mainWindow.focus();
+        lastCount = 0;
+        updateTrayIcon(0);
+      }
+    });
+
+    notif.show();
+  }
+  lastCount = count;
+  updateTrayIcon(count);
+});
+
+ipcMain.on('update-tray-badge', (event, count) => {
+  lastCount = count;
+  updateTrayIcon(count);
+});
+
 const gotTheLock = app.requestSingleInstanceLock();
 
 if (!gotTheLock) {
@@ -116,8 +204,16 @@ if (!gotTheLock) {
   app.commandLine.appendSwitch('disable-gpu');
 
   app.whenReady().then(() => {
+    session.defaultSession.setPermissionRequestHandler((_, permission, callback) => {
+      if (permission === 'notifications') return callback(false);
+      callback(true);
+    });
     createWindow();
     createTray();
+  });
+
+  nativeTheme.on('updated', () => {
+    updateTrayIcon(lastCount);
   });
 
   app.on('window-all-closed', () => {

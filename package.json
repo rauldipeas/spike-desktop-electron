@@ -34,9 +34,15 @@
     "linux": {
       "target": "deb",
       "category": "Network",
-      "icon": "resources/spike.svg",
-      "maintainer": "Raul Dipeas <rauldipeas@example.com>"
-    }
+      "icon": "resources/spike.png",
+      "maintainer": "Raul Dipeas <rauldipeas@disroot.org>"
+    },
+    "extraResources": [
+      {
+        "from": "resources/alert.mp3",
+        "to": "alert.mp3"
+      }
+    ]
   },
-  "homepage": "https://github.com/rauldipeas/spike-desktop"  
+  "homepage": "https://github.com/rauldipeas/spike-desktop"
 }
