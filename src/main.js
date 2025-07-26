@@ -1,4 +1,5 @@
 const { app, BrowserWindow, Tray, Menu, nativeImage, Notification, ipcMain, session, nativeTheme } = require('electron');
+const { exec } = require('child_process');
 const path = require('path');
 
 let mainWindow = null;
@@ -11,6 +12,14 @@ const icons = {
   color: path.join(__dirname, '..', 'resources', 'color-tray.png'),
   colorBadge: path.join(__dirname, '..', 'resources', 'color-tray-badge.png')
 };
+
+const alertSound = path.join(process.resourcesPath, 'alert.mp3');
+
+function playAlert() {
+  exec(`ffplay -nodisp -autoexit "${alertSound}"`, (error) => {
+    if (error) console.error('Erro ao tocar som:', error);
+  });
+}
 
 function getIconPath(count) {
   const isDark = nativeTheme.shouldUseDarkColors;
@@ -119,7 +128,7 @@ function createWindow() {
 }
 
 function createTray() {
-  tray = new Tray(nativeImage.createFromPath(icons.mono));
+  tray = new Tray(nativeImage.createFromPath(getIconPath(0)));
 
   const contextMenu = Menu.buildFromTemplate([
     {
@@ -174,15 +183,18 @@ ipcMain.on('notify', (event, count) => {
       }
     });
 
+    playAlert();
     notif.show();
   }
   lastCount = count;
-  updateTrayIcon(count);
 });
 
 ipcMain.on('update-tray-badge', (event, count) => {
-  lastCount = count;
   updateTrayIcon(count);
+});
+
+nativeTheme.on('updated', () => {
+  updateTrayIcon(lastCount);
 });
 
 const gotTheLock = app.requestSingleInstanceLock();
@@ -210,10 +222,6 @@ if (!gotTheLock) {
     });
     createWindow();
     createTray();
-  });
-
-  nativeTheme.on('updated', () => {
-    updateTrayIcon(lastCount);
   });
 
   app.on('window-all-closed', () => {
